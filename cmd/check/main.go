@@ -154,6 +154,9 @@ func fatal(message string) {
 
 const officialRegistry = "registry-1.docker.io"
 
+// Example private repo
+// companyrepos-docker-xxx-deploy-dev.bintray.io/containername
+
 func parseRepository(repository string) (string, string) {
 	segs := strings.Split(repository, "/")
 
