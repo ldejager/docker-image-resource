@@ -15,6 +15,7 @@ import (
 	"github.com/docker/distribution/registry/client/auth"
 	"github.com/docker/distribution/registry/client/transport"
 	"github.com/hashicorp/go-multierror"
+	"golang.org/x/net/publicsuffix"
 )
 
 func main() {
@@ -154,21 +155,33 @@ func fatal(message string) {
 
 const officialRegistry = "registry-1.docker.io"
 
-// Example private repo
-// companyrepos-docker-xxx-deploy-dev.bintray.io/containername
-
 func parseRepository(repository string) (string, string) {
 	segs := strings.Split(repository, "/")
+
+	other_repos := []string{"bintray.io", "quay.io"}
+
+	other := false
+
+	if CheckRepos(repository, other_repos) {
+		other = true
+	}
 
 	switch len(segs) {
 	case 3:
 		return segs[0], segs[1] + "/" + segs[2]
 	case 2:
-		if strings.Contains(segs[0], ":") {
+		if other == true {
+			return segs[0], segs[1]
+		} else if strings.Contains(segs[0], ":") {
 			return segs[0], segs[1]
 		} else {
 			return officialRegistry, segs[0] + "/" + segs[1]
 		}
+		// if strings.Contains(segs[0], ":") {
+		// 	return segs[0], segs[1]
+		// } else {
+		// 	return officialRegistry, segs[0] + "/" + segs[1]
+		// }
 	case 1:
 		return officialRegistry, "library/" + segs[0]
 	}
