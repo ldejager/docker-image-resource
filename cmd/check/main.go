@@ -153,6 +153,16 @@ func fatal(message string) {
 	os.Exit(1)
 }
 
+func CheckRepos(repository string, other_repos []string) bool {
+	for _, repo := range other_repos {
+		repo_tld, _ := publicsuffix.EffectiveTLDPlusOne(repository)
+		if strings.Contains(repo_tld, repo) {
+			return true
+		}
+	}
+	return false
+}
+
 const officialRegistry = "registry-1.docker.io"
 
 func parseRepository(repository string) (string, string) {
